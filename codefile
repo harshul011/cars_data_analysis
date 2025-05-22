@@ -1,0 +1,67 @@
+
+import seaborn as sns  # For data visualization
+import matplotlib.pyplot as plt  # For plotting graphs
+import numpy as np  # Numerical operations (not used directly here)
+import pandas as pd  # For data manipulation and analysis
+
+# Load the car dataset from your local machine
+b = pd.read_csv(r"C:\Users\DELL\Downloads\Cars.csv")
+
+# Print basic info about the DataFrame (column types, non-null counts, memory usage)
+print(b.info())
+
+# Print number of missing values in each column
+print(b.isnull().sum())
+
+# Visualizing missing data as a heatmap (optional - uncomment to use)
+# sns.heatmap(b.isnull())
+# plt.show()
+
+# Adjust display settings so that full output is shown
+pd.set_option("display.width", None)
+
+# Print descriptive statistics for all numeric columns
+print(b.describe())
+
+# Specify which columns are numeric (and relevant) for missing value handling
+int_columns = ['EngineSize', 'Cylinders', 'Horsepower', 'MPG_City', 'MPG_Highway', 'Weight', 'Wheelbase', 'Length']
+
+# Replace missing values in each numeric column with the column's mean
+for i in int_columns:
+    b[i] = b[i].fillna(b[i].mean())
+
+# Count how many cars are present for each brand (Make)
+print(b["Make"].value_counts())
+
+# Rotate x-axis labels by 90 degrees for better visibility in bar plots
+plt.xticks(rotation=90)
+
+# Store value counts of car brands in variable 'm'
+m = b["Make"].value_counts()
+
+# Plot the brand frequency (bar plot) — Uncomment to visualize
+# sns.barplot(data=m)  # This line won't work directly; barplot needs x and y
+# plt.show()
+
+# Print how many unique car brands are in the dataset
+print("number of car brands =", len(m.index))
+
+# Filter and print cars that originate either from Asia or Europe
+n = b[(b["Origin"] == "Asia") | (b["Origin"] == "Europe")]
+print(n)  # Full details of selected rows
+print(n["Make"].unique())  # Unique brand names for selected rows
+
+# Drop all cars whose weight is greater than 4000 (removing heavy cars)
+b.drop(b[b["Weight"] > 4000].index, inplace=True)
+
+# Define a function to increase 'MPG_City' column values by 3
+def column_increase(x):
+    x["MPG_City"] += 3
+    return x
+    # Alternate: x["MPG_City"] = x["MPG_City"].add(3)
+
+# Apply the function to the dataset
+b = column_increase(b)
+
+# Print the modified dataset
+print(b)
